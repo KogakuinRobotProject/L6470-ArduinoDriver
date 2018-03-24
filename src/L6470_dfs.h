@@ -49,4 +49,8 @@ typedef enum{
 	STATUS,
 }L6470_REG;
 
+typedef enum{
+	L6470_OK,
+};
+
 #endif

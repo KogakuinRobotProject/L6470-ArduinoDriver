@@ -13,7 +13,7 @@ void L6470::cs_unselect(void)
 
 void L6470::spi_begin(void)
 {
-	pSPI->beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));
+	pSPI->beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE3));
 }
 
 void L6470::spi_stop(void)
@@ -155,8 +155,39 @@ void L6470::GetStatus(unsigned long status)
 	
 }
 
-L6470::L6470(byte _cs)
+L6470::L6470(byte _cs):
+AbsPos(this),//‚±‚±‚ÌéŒ¾‚ª‚·‚²‚¢–³‘Ê‚ÉŒ©‚¦‚é
+ElPos(this),
+Mark(this),
+Speed(this),
+Acc(this),
+Dec(this),
+MaxSpeed(this),
+MinSpeed(this),
+KvalHold(this),
+KvalRun(this),
+KvalAcc(this),
+KvalDec(this),
+IntSpeed(this),
+StSlp(this),
+FnSlpAcc(this),
+FnSlpDec(this),
+KTherm(this),
+AdcOut(this),
+OcdTh(this),
+StallTh(this),
+FsSpd(this),
+StepMode(this),
+AlarmEn(this),
+Config(this),
+Status(this)
 {
 	pSPI=&SPI;
 	SPICS = _cs;
+}
+
+byte L6470::begin(void)
+{
+	pSPI->begin();
+	return L6470_OK;
 }
