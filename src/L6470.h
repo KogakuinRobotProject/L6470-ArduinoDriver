@@ -27,6 +27,10 @@ private:
 		virtual void Set(data_len data){
 			device->SetParam(addr,(byte*)&data,sizeof(data_len));
 		}
+		Registers& operator=(data_len &data){
+			this->Set(data);
+			return *this;
+		}
 	};
 	
 	template<L6470_REG addr,typename data_len>
