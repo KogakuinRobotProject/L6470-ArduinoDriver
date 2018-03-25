@@ -60,7 +60,7 @@ void L6470::read_command(byte command,byte* data,byte len)
 	}
 }
 
-void L6470::NOP(void)
+void L6470::Nop(void)
 {
 	write_command(L6470_COMMAND_NOP);
 }

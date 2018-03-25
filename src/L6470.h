@@ -48,7 +48,7 @@ private:
 
 public:
 //	コマンドメソッド
-	void			NOP(void);
+	void			Nop(void);
 	void			SetParam(byte,byte*,byte);
 	void			GetParam(byte,byte*,byte);
 	void			Run(byte,unsigned long);
