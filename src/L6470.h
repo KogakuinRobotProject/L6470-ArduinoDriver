@@ -7,6 +7,9 @@
 
 #include"L6470_dfs.h"
 
+#define _L6470_DEBUG_
+//#define _L6470_UNDEBUG_
+
 class L6470{
 
 private:
@@ -73,7 +76,7 @@ public:
 	void			HardStop(void);
 	void			SoftHiZ(void);
 	void			HardHiZ(void);
-	void			GetStatus(unsigned long);
+	void			GetStatus(word*);
 	
 public:
 	Registers<ABS_POS,unsigned long>	AbsPos;
@@ -105,6 +108,11 @@ public:
 public:
 	L6470(byte _cs);
 	byte begin(void);
+
+	bool isBusy(void);
+	
+	L6470& operator+=(signed long);
+	L6470& operator-=(signed long);
 };
 
 #endif

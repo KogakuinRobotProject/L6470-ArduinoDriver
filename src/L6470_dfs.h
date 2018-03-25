@@ -19,7 +19,7 @@
 #define L6470_COMMAND_HARDSTOP			(byte)(0xb8)
 #define L6470_COMMAND_SOFTHIZ			(byte)(0xa0)
 #define L6470_COMMAND_HARDHIZ			(byte)(0xa8)
-#define L6470_COMMAND_GETSTATES			(byte)(0xd0)
+#define L6470_COMMAND_GETSTATUS			(byte)(0xd0)
 
 typedef enum{
 	ABS_POS = 0x01,

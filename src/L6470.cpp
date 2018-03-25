@@ -1,6 +1,14 @@
 #include"L6470.h"
 #include"L6470_dfs.h"
 
+#ifdef _L6470_DEBUG_
+	#define _debug_print(x) Serial.print(x)
+#elif _L6470_UNDEBUG_
+	#define _debug_print(x) 
+#else
+	#error undefine mode
+#endif
+
 void L6470::cs_select(void)
 {
 	digitalWrite(SPICS, LOW);
@@ -150,9 +158,9 @@ void L6470::HardHiZ(void)
 	write_command(L6470_COMMAND_HARDHIZ);
 }
 
-void L6470::GetStatus(unsigned long status)
+void L6470::GetStatus(word *status)
 {
-	
+	read_command(L6470_COMMAND_GETSTATUS,(byte*)status,2);
 }
 
 L6470::L6470(byte _cs):
@@ -189,5 +197,33 @@ Status(this)
 byte L6470::begin(void)
 {
 	pSPI->begin();
+	
+	this->ResetDevice();
+	while(this->isBusy());
+	
 	return L6470_OK;
+}
+
+bool L6470::isBusy(void)
+{
+	word status;
+	this->GetStatus(&status);
+	return ((status >> 1) & 0x01) == 1;
+}
+
+//ステップ入力
+L6470& L6470::operator+=(signed long step)
+{
+	while(isBusy())delay(10);
+	byte dir = (step >> 31) & 0x01;
+	unsigned long u_step = step & 0x0003fff;
+	this->Move(dir,u_step);
+}
+
+L6470& L6470::operator-=(signed long step)
+{
+	while(isBusy())delay(10);
+	byte dir = (~step >> 31) & 0x01;
+	unsigned long u_step = step & 0x0003fff;
+	this->Move(dir,u_step);
 }
