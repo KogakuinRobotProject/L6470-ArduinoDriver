@@ -18,7 +18,7 @@ private:
 	class Registers{
 		L6470* device;
 	public:
-		Registers(L6470* _device):device(_device){}
+		Registers(const L6470 *_device):device(_device){}
 		virtual data_len Get(void){
 			data_len ret;
 			device->GetParam(addr,(byte*)&ret,sizeof(data_len));
@@ -27,9 +27,12 @@ private:
 		virtual void Set(data_len data){
 			device->SetParam(addr,(byte*)&data,sizeof(data_len));
 		}
-		Registers& operator=(data_len &data){
+		Registers& operator=(data_len data){
 			this->Set(data);
 			return *this;
+		}
+		operator data_len(){
+			return this->Get();
 		}
 	};
 	
