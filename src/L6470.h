@@ -88,7 +88,6 @@ private:
 
 public:
 //	コマンドメソッド
-// Nop (No Operation)
 	void			Nop(void);
 	void			Run(byte,unsigned long);
 	void			StepClock(byte);
@@ -105,7 +104,7 @@ public:
 	void			HardStop(void);
 	void			SoftHiZ(void);
 	void			HardHiZ(void);
-	void			GetStatus(word*);
+	void			GetStatus(word*);//エラーフラグが読み取れるが同時に消えるので注意。
 	
 public:
 	Registers<ABS_POS,unsigned long>	AbsPos;
@@ -135,16 +134,21 @@ public:
 	Registers<STATUS,word>				Status;
 
 public:
+//API群
 	L6470(byte _cs);
-	byte begin(void);
-
-	bool isBusy(void);
+	virtual byte begin(void);
 	
-	L6470& SetConfig(L6470_StepThick::Config);
-	L6470& SetConfig(L6470_RadSec::Config);
+	virtual bool isBusy(void);
 	
-	L6470& operator+=(signed long);
-	L6470& operator-=(signed long);
+	virtual bool isError(void);
+	virtual bool isThermalShutdown(void);
+	virtual bool isThermalWarning(void);
+	
+	virtual L6470& SetConfig(L6470_StepThick::Config);
+	//virtual L6470& SetConfig(L6470_RadSec::Config);（未実装）
+	
+	virtual L6470& operator+=(signed long);
+	virtual L6470& operator-=(signed long);
 };
 
 #endif

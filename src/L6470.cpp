@@ -226,8 +226,30 @@ byte L6470::begin(void)
 bool L6470::isBusy(void)
 {
 	word status;
-	this->GetStatus(&status);
-	return ((status >> 1) & 0x01) == 1;
+	status = this->Status;
+	return (status & L6470_STATUS_MASK_BUSY) != L6470_STATUS_MASK_BUSY; //Active Low‚È‚Ì‚ÅAmask‚Æˆê’v‚µ‚½‚çNonActive
+}
+
+bool L6470::isError(void)
+{
+	word status;
+	status = this->Status;
+	return (status & L6470_STATUS_ERROR_MASK) != L6470_STATUS_ERROR_MASK; //Active Low‚È‚Ì‚ÅAmask‚Æˆê’v‚µ‚½‚çNonActive
+	
+}
+
+bool L6470::isThermalShutdown(void)
+{
+	word status;
+	status = this->Status;
+	return (status & L6470_STATUS_MASK_TH_SD) != L6470_STATUS_MASK_TH_SD; //Active Low‚È‚Ì‚ÅAmask‚Æˆê’v‚µ‚½‚çNonActive
+}
+
+bool L6470::isThermalWarning(void)
+{
+	word status;
+	status = this->Status;
+	return (status & L6470_STATUS_MASK_TH_WRN) != L6470_STATUS_MASK_TH_WRN; //Active Low‚È‚Ì‚ÅAmask‚Æˆê’v‚µ‚½‚çNonActive
 }
 
 L6470& L6470::SetConfig(L6470_StepThick::Config cfg)
