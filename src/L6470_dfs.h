@@ -21,6 +21,11 @@
 #define L6470_COMMAND_HARDHIZ			(byte)(0xa8)
 #define L6470_COMMAND_GETSTATUS			(byte)(0xd0)
 
+#define L6470_DEFAULT_ACC				0x08A
+#define L6470_DEFAULT_DEC				0x08A
+#define L6470_DEFAULT_MAX_SPEED			0x041
+#define L6470_DEFAULT_MIN_SPEED			0x000
+
 typedef enum{
 	ABS_POS = 0x01,
 	EL_POS,

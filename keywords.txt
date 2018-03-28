@@ -3,6 +3,7 @@
 #######################################
 
 L6470	KEYWORD1
+L6470_config	KEYWORD1
 
 Nop	KEYWORD2
 SetParam	KEYWORD2

@@ -44,43 +44,61 @@ void L6470::write_command(byte command)
 	send_byte(command); 
 }
 
-void L6470::write_command(byte command,byte* send,byte len)
+void L6470::write_command(byte command,byte data)
 {
 	send_byte(command);
-	for(int i = 0;i < len;i++){
-		send_byte(send[i]);
-	}
+	send_byte(data);
 }
 
-void L6470::write_command(byte command,unsigned long data)
+void L6470::write_command(byte command,word data)
 {
 	send_byte(command);
+	send_byte((byte)((data >> 8) & 0xff));
+	send_byte((byte)((data ) & 0xff));
+}
+
+//こいつのせいでtemplate化ではなく、オーバロードにしました。
+//こいつ3byteしか送ってない。特殊化してもいいんだけどね。
+//forで回すより、ビットシフトを選びました。エンディアンの違いをこちらのほうが吸収できそう。
+//近年のマイコンでbigエンディアンのCPUいくつあるんだろ・・・ROMの消費を考えろって？しらない。
+void L6470::write_command(byte command,unsigned long data)
+{
+
+	send_byte(command);
 	send_byte((byte)((data >> 16) & 0xff));
-	send_byte((byte)((data >>  8) & 0xff));
+	send_byte((byte)((data >> 8) & 0xff));
 	send_byte((byte)((data) & 0xff));
 }
 
-void L6470::read_command(byte command,byte* data,byte len)
+void L6470::read_command(byte command,byte* data)
 {
 	send_byte(command);
-	for(int i =0;i<len;i++){
-		data[i] = send_byte(0x00);
-	}
+	(*data) = send_byte(0x00);
+}
+
+void L6470::read_command(byte command,word* data)
+{
+	byte rev_temp[2];
+	send_byte(command);
+	rev_temp[0] = send_byte(0x00);
+	rev_temp[1] = send_byte(0x00);
+	(*data) = (rev_temp[0] << 8) | (rev_temp[1]);
+}
+
+//write_command(byte,unsigned long)同様
+void L6470::read_command(byte command,unsigned long* data)
+{
+	byte rev_temp[3];
+	send_byte(command);
+	rev_temp[0] = send_byte(0x00);
+	rev_temp[1] = send_byte(0x00);
+	rev_temp[2] = send_byte(0x00);
+	(*data) = (rev_temp[0] << 16) | (rev_temp[1] << 8) | (rev_temp[2]);
 }
 
 void L6470::Nop(void)
 {
 	write_command(L6470_COMMAND_NOP);
-}
-
-void L6470::SetParam(byte addr,byte* data,byte len)
-{
-	write_command(L6470_COMMAND_SETPARAM(addr),data,len);
-}
-
-void L6470::GetParam(byte addr,byte* data,byte len)
-{
-	read_command(L6470_COMMAND_GETPARAM(addr),data,len);
 }
 
 void L6470::Run(byte dir,unsigned long SPD)
@@ -160,7 +178,7 @@ void L6470::HardHiZ(void)
 
 void L6470::GetStatus(word *status)
 {
-	read_command(L6470_COMMAND_GETSTATUS,(byte*)status,2);
+	read_command(L6470_COMMAND_GETSTATUS,status);
 }
 
 L6470::L6470(byte _cs):
@@ -192,6 +210,7 @@ Status(this)
 {
 	pSPI=&SPI;
 	SPICS = _cs;
+	pinMode(SPICS,OUTPUT);
 }
 
 byte L6470::begin(void)
@@ -211,6 +230,14 @@ bool L6470::isBusy(void)
 	return ((status >> 1) & 0x01) == 1;
 }
 
+L6470& L6470::SetConfig(L6470_StepThick::Config cfg)
+{
+	this->Acc = cfg.acc;
+	this->Dec = cfg.dec;
+	this->MaxSpeed = cfg.max_speed;
+	this->MinSpeed = cfg.min_speed;
+}
+
 //ステップ入力
 L6470& L6470::operator+=(signed long step)
 {
@@ -227,3 +254,14 @@ L6470& L6470::operator-=(signed long step)
 	unsigned long u_step = step & 0x0003fff;
 	this->Move(dir,u_step);
 }
+
+namespace L6470_StepThick{
+	Config::Config(word _acc ,word _dec ,word _max_speed ,word _min_speed):
+	acc(_acc),
+	dec(_dec),
+	max_speed(_max_speed),
+	min_speed(_min_speed)
+	{
+	}
+}
+
