@@ -3,8 +3,12 @@
 
 #ifdef _L6470_DEBUG_
 	#define _debug_print(x) Serial.print(x)
+	#define _debug_println(x) Serial.println(x)
+	#define _debug_println(x,y) Serial.println(x,y)
 #elif _L6470_UNDEBUG_
 	#define _debug_print(x) 
+	#define _debug_println(x)
+	#define _debug_println(x,y) Serial.println(x,y)
 #else
 	#error undefine mode
 #endif
@@ -21,7 +25,7 @@ void L6470::cs_unselect(void)
 
 void L6470::spi_begin(void)
 {
-	pSPI->beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE3));
+	pSPI->beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE3));
 }
 
 void L6470::spi_stop(void)
@@ -73,26 +77,26 @@ void L6470::write_command(byte command,unsigned long data)
 void L6470::read_command(byte command,byte* data)
 {
 	send_byte(command);
-	(*data) = send_byte(0x00);
+	(*data) = send_byte(L6470_COMMAND_NOP);
 }
 
 void L6470::read_command(byte command,word* data)
 {
 	byte rev_temp[2];
 	send_byte(command);
-	rev_temp[0] = send_byte(0x00);
-	rev_temp[1] = send_byte(0x00);
+	rev_temp[0] = send_byte(L6470_COMMAND_NOP);
+	rev_temp[1] = send_byte(L6470_COMMAND_NOP);
 	(*data) = (rev_temp[0] << 8) | (rev_temp[1]);
 }
 
 //write_command(byte,unsigned long)“¯—l
 void L6470::read_command(byte command,unsigned long* data)
 {
-	byte rev_temp[3];
+	unsigned long rev_temp[3];
 	send_byte(command);
-	rev_temp[0] = send_byte(0x00);
-	rev_temp[1] = send_byte(0x00);
-	rev_temp[2] = send_byte(0x00);
+	rev_temp[0] = send_byte(L6470_COMMAND_NOP);
+	rev_temp[1] = send_byte(L6470_COMMAND_NOP);
+	rev_temp[2] = send_byte(L6470_COMMAND_NOP);
 	(*data) = (rev_temp[0] << 16) | (rev_temp[1] << 8) | (rev_temp[2]);
 }
 
