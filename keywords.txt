@@ -3,10 +3,9 @@
 #######################################
 
 L6470	KEYWORD1
+L6470_config	KEYWORD1
 
 Nop	KEYWORD2
-SetParam	KEYWORD2
-GetParam	KEYWORD2
 Run	KEYWORD2
 StepClock	KEYWORD2
 Move	KEYWORD2
@@ -51,5 +50,9 @@ Config	KEYWORD2
 Status	KEYWORD2
 
 begin	KEYWORD2
+isBusy	KEYWORD2
+isError	KEYWORD2
+isThermalShutdown	KEYWORD2
+isThermalWarning	KEYWORD2
 
 L6470_OK	LITERAL1

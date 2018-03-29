@@ -7,6 +7,36 @@
 
 #include"L6470_dfs.h"
 
+#define _L6470_DEBUG_
+//#define _L6470_UNDEBUG_
+
+//前方宣言
+class L6470;
+
+namespace L6470_RadSec{
+	class Config{
+		friend L6470;
+		float acc;
+		float dec;
+		float max_speed;
+		float min_speed;
+		
+	public:
+	};
+}
+
+namespace L6470_StepThick{
+	class Config{
+		friend L6470;
+		word acc;
+		word dec;
+		word max_speed;
+		word min_speed;
+	public:
+		Config(word _acc ,word _dec ,word _max_speed ,word _min_speed);
+	};
+}
+
 class L6470{
 
 private:
@@ -21,11 +51,11 @@ private:
 		Registers(const L6470 *_device):device(_device){}
 		virtual data_len Get(void){
 			data_len ret;
-			device->GetParam(addr,(byte*)&ret,sizeof(data_len));
+			device->read_command(L6470_COMMAND_GETPARAM(addr),&ret);
 			return ret;
 		}
 		virtual void Set(data_len data){
-			device->SetParam(addr,(byte*)&data,sizeof(data_len));
+			device->write_command(L6470_COMMAND_SETPARAM(addr),data);
 		}
 		Registers& operator=(data_len data){
 			this->Set(data);
@@ -47,17 +77,18 @@ private:
 	void spi_stop(void);
 
 	byte send_byte(byte);
-
+	
 	void write_command(byte);
-	void write_command(byte,byte*,byte);
-	void write_command(byte,unsigned long);
-	void read_command(byte,byte*,byte);
+	void write_command(byte,byte);
+	void write_command(byte,word);
+	void write_command(byte,unsigned long);	
+	void read_command(byte,byte*);
+	void read_command(byte,word*);
+	void read_command(byte,unsigned long*);
 
 public:
 //	コマンドメソッド
 	void			Nop(void);
-	void			SetParam(byte,byte*,byte);
-	void			GetParam(byte,byte*,byte);
 	void			Run(byte,unsigned long);
 	void			StepClock(byte);
 	void			Move(byte,unsigned long);
@@ -73,7 +104,7 @@ public:
 	void			HardStop(void);
 	void			SoftHiZ(void);
 	void			HardHiZ(void);
-	void			GetStatus(unsigned long);
+	void			GetStatus(word*);//エラーフラグが読み取れるが同時に消えるので注意。
 	
 public:
 	Registers<ABS_POS,unsigned long>	AbsPos;
@@ -103,8 +134,21 @@ public:
 	Registers<STATUS,word>				Status;
 
 public:
+//API群
 	L6470(byte _cs);
-	byte begin(void);
+	virtual byte begin(void);
+	
+	virtual bool isBusy(void);
+	
+	virtual bool isError(void);
+	virtual bool isThermalShutdown(void);
+	virtual bool isThermalWarning(void);
+	
+	virtual L6470& SetConfig(L6470_StepThick::Config);
+	//virtual L6470& SetConfig(L6470_RadSec::Config);（未実装）
+	
+	virtual L6470& operator+=(signed long);
+	virtual L6470& operator-=(signed long);
 };
 
 #endif
