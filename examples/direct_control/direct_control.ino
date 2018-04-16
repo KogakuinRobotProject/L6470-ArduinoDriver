@@ -24,10 +24,10 @@ void setup() {
   StepperMotor.MinSpeed = 0x000;  //IC default Parameter 0x000
 
 //Vs が12Vで、回転時モータに掛ける最大の電圧を5Vに設定する場合
-  StepperMotor.KvalHold = (5 / 12) * 255;
-  StepperMotor.KvalRun = (5 / 12) * 255;
-  StepperMotor.KvalAcc = (5 / 12) * 255;
-  StepperMotor.KvalDec = (5 / 12) * 255;
+  StepperMotor.KvalHold = (5.0 / 12) * 255;
+  StepperMotor.KvalRun = (5.0 / 12) * 255;
+  StepperMotor.KvalAcc = (5.0 / 12) * 255;
+  StepperMotor.KvalDec = (5.0 / 12) * 255;
 }
 
 void loop() {
